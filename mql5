@@ -1,0 +1,136 @@
+
+//+------------------------------------------------------------------+
+//|                                               CAD Sniper MT5.mq5 |
+//|                         Copyright 2021, Forex Robot Easy Team     |
+//|                              https://www.forexroboteasy.com       |
+//+------------------------------------------------------------------+
+//| Expert Advisor for maximizing trading success in the Forex market |
+//| based on the CAD Sniper MT5 software.                              |
+//+------------------------------------------------------------------+
+
+//---- Input parameters
+input double RiskFactor1 = 0.05;  // Risk factor 1 (minimum drawdown)
+input double RiskFactor2 = 0.1;   // Risk factor 2
+input double RiskFactor3 = 0.15;  // Risk factor 3
+input double RiskFactor4 = 0.2;   // Risk factor 4
+input double RiskFactor5 = 0.25;  // Risk factor 5
+
+//---- Global variables
+int MagicNumber = 123456;  // Unique identifier for the robot
+
+//---- Expert Advisor initialization function
+int OnInit()
+{
+   // Initialize CAD Sniper MT5 software
+   if (!CADSniperMT5_Init())
+   {
+      Print('CAD Sniper MT5 initialization failed!');
+      return INIT_FAILED;
+   }
+   
+   // Set fixed stop-loss for all orders
+   SetStopLoss(100);  // Stop-loss set to 100 pips
+   
+   // Set Christmas Filter feature
+   if (IsChristmas())
+   {
+      SetChristmasFilter(true);
+   }
+   
+   return INIT_SUCCEEDED;
+}
+
+//---- Expert Advisor tick function
+void OnTick()
+{
+   // Check for available trades
+   if (CADSniperMT5_HasSignals())
+   {
+      // Get available currency pairs
+      string[] currencyPairs = CADSniperMT5_GetCurrencyPairs();
+      
+      // Iterate through each currency pair
+      for (int i = 0; i < ArraySize(currencyPairs); i++)
+      {
+         // Check if currency pair is supported
+         if (IsSupportedCurrencyPair(currencyPairs[i]))
+         {
+            // Get trade signal for the currency pair
+            int tradeSignal = CADSniperMT5_GetTradeSignal(currencyPairs[i]);
+            
+            // Calculate trade volume based on risk factor
+            double tradeVolume = CalculateTradeVolume(tradeSignal);
+            
+            // Place order with the calculated trade volume
+            PlaceOrder(currencyPairs[i], tradeSignal, tradeVolume);
+         }
+      }
+   }
+}
+
+//---- CAD Sniper MT5 software initialization function
+bool CADSniperMT5_Init()
+{
+   // Implementation goes here...
+   return true;
+}
+
+//---- Check if it is Christmas season
+bool IsChristmas()
+{
+   // Implementation goes here...
+   return false;
+}
+
+//---- Set Christmas Filter feature
+void SetChristmasFilter(bool enable)
+{
+   // Implementation goes here...
+}
+
+//---- Check if currency pair is supported
+bool IsSupportedCurrencyPair(string currencyPair)
+{
+   // Implementation goes here...
+   return true;
+}
+
+//---- Get trade volume based on risk factor
+double CalculateTradeVolume(int tradeSignal)
+{
+   double riskFactor;
+   
+   // Determine risk factor based on trade signal
+   switch (tradeSignal)
+   {
+      case BUY:
+         riskFactor = RiskFactor1;
+         break;
+      case SELL:
+         riskFactor = RiskFactor2;
+         break;
+      case HOLD:
+         riskFactor = RiskFactor3;
+         break;
+      default:
+         riskFactor = RiskFactor4;
+         break;
+   }
+   
+   // Calculate trade volume based on risk factor
+   double tradeVolume = AccountBalance() * riskFactor;
+   
+   return tradeVolume;
+}
+
+//---- Place order with the specified trade volume
+void PlaceOrder(string currencyPair, int tradeSignal, double tradeVolume)
+{
+   // Implementation goes here...
+}
+
+//---- Expert Advisor deinitialization function
+void OnDeinit(const int reason)
+{
+   // Implementation goes here...
+}
